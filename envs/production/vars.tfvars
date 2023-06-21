@@ -1,10 +1,10 @@
 # You should update the below variables
-cluster_name = "master"
-account_id   = "894642160939"
-vpc_cidr     = "10.0.0.0/16"
+cluster_name = "production"
+account_id   = "829583897117"
+vpc_cidr    = "10.255.0.0/16"
 aws_region          = "us-east-1"
-environment_name     = "master"
-hosted_zone_name    = "master.qualityspace.com" # your Existing Hosted Zone
+environment_name     = "production"
+hosted_zone_name    = "production.qualityspace.com" # your Existing Hosted Zone
 eks_admin_role_name = "Admin" # Additional role admin in the cluster (usually the role I use in the AWS console)
 
 # EKS Blueprint AddOns ArgoCD App of App repository

@@ -13,6 +13,11 @@ variable "vpc_cidr" {
   type        = string
 }
 
+variable "account_id" {
+  description = "Account_id"
+  type        = string
+}
+
 variable "argocd_secret_manager_name_suffix" {
   type        = string
   description = "Name of secret manager secret for ArgoCD Admin UI Password"
