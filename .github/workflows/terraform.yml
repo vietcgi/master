@@ -113,7 +113,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: us-east-1
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github
       - run: aws sts get-caller-identity
       
       # Set environment variables.
@@ -138,8 +138,8 @@ jobs:
         with:
           workspace: ${{ env.tf_workspace }}
           path: ./
-          var_file: envs/us-east-1/${{ env.tf_environment }}/vars.tfvars
-          backend_config_file: envs/us-east-1/${{ env.tf_environment }}/backend.tfvars
+          var_file: envs/${{ env.tf_environment }}/vars.tfvars
+          backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
           backend_config: key=terraform/${{ env.tf_environment }}/terraform.tfstate
 
       # Run terraform plan on 'pull_request' event.
@@ -151,8 +151,8 @@ jobs:
           destroy: ${{ contains(matrix.path[0], 'destroy') }}
           workspace: ${{ env.tf_workspace }}
           path: ./
-          var_file: envs/us-east-1/${{ env.tf_environment }}/vars.tfvars
-          backend_config_file: envs/us-east-1/${{ env.tf_environment }}/backend.tfvars
+          var_file: envs/${{ env.tf_environment }}/vars.tfvars
+          backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
           backend_config: key=terraform/${{ env.tf_environment }}/terraform.tfstate
 
       # Run terraform apply on 'push' event or if 'auto_approve' label is present.
@@ -164,6 +164,6 @@ jobs:
           destroy: ${{ contains(matrix.path[0], 'destroy') }}
           workspace: ${{ env.tf_workspace }}
           path: ./
-          var_file: envs/us-east-1/${{ env.tf_environment }}/vars.tfvars
-          backend_config_file: envs/us-east-1/${{ env.tf_environment }}/backend.tfvars
+          var_file: envs/${{ env.tf_environment }}/vars.tfvars
+          backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
           backend_config: key=terraform/${{ env.tf_environment }}/terraform.tfstate
