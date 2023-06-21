@@ -12,5 +12,8 @@ on:
 jobs:
   terraform:
     uses: ./.github/workflows/terraform.yml
+    secrets:
+      env: |
     permissions:
       pull-requests: write
+    
