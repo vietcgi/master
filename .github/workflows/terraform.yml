@@ -1,9 +1,5 @@
 name: Terraform Reusable
 
-# This is a reusable workflow to run terraform plan and apply on
-# 'pull_request' and 'push' events using matrix strategy. Learn more:
-# https://github.com/o11y-top/aws-terraform-multiple-environments/#readme
-
 on:
   workflow_call:
     secrets:
