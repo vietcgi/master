@@ -95,6 +95,9 @@ jobs:
     needs: [labels]
     if: toJSON(fromJSON(needs.labels.outputs.matrix)) != '[]'
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
 
     # Run for each label and continue through to release state lock.
     strategy:
