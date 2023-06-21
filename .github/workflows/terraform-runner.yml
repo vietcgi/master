@@ -13,6 +13,8 @@ jobs:
   terraform:
     # uses: o11y-top/aws-terraform-multiple-environments/.github/workflows/terraform.yml@ref
     uses: ./.github/workflows/terraform.yml
+    permissions:
+      pull-requests: write
     secrets:
       env: |
         AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
