@@ -4,7 +4,7 @@ account_id   = "894642160939"
 vpc_cidr     = "10.0.0.0/16"
 aws_region          = "us-east-1"
 environment_name     = "master"
-hosted_zone_name    = "master.qualityspace.com" # your Existing Hosted Zone
+hosted_zone_name    = "qualityspace.com" # your Existing Hosted Zone
 eks_admin_role_name = "Admin" # Additional role admin in the cluster (usually the role I use in the AWS console)
 
 # EKS Blueprint AddOns ArgoCD App of App repository
