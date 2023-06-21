@@ -142,7 +142,6 @@ jobs:
         with:
           workspace: ${{ env.tf_workspace }}
           path: ./
-          var_file: envs/${{ env.tf_environment }}/vars.tfvars
           backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
           backend_config: |
             key=${{ env.tf_environment }}/terraform.tfstate
