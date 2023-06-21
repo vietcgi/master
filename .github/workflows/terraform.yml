@@ -118,6 +118,7 @@ jobs:
           aws-region: us-east-1
           role-to-assume: arn:aws:iam::894642160939:role/github
       - run: aws sts get-caller-identity
+      - run: aws s3 ls
       
       # Set environment variables.
       - name: Environment variables
