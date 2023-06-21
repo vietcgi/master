@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+
+  # https://github.com/dependabot/dependabot-core/issues/2178
+  - package-ecosystem: terraform
+    directory: envs/*
+    schedule:
+      interval: daily
+
+- package-ecosystem: terraform
+    directory: envs/us-east-1/production
+    schedule:
+      interval: daily
+
+- package-ecosystem: terraform
+    directory: envs/us-east-1/staging
+    schedule:
+      interval: daily
+
+- package-ecosystem: terraform
+    directory: envs/us-east-1/master
+    schedule:
+      interval: daily
