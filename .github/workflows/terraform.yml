@@ -116,6 +116,7 @@ jobs:
           role-session-name: master
       - run: aws sts get-caller-identity
       - run: pwd
+      - run: ls -la
       
       # Set environment variables.
       - name: Environment variables
