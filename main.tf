@@ -1,9 +1,9 @@
 provider "aws" {
   region  = local.region
-  profile = "altruist-${var.environment}"
+  profile = "${var.environment_name}"
   assume_role {
     role_arn     = "arn:aws:iam::${var.account_id}:role/AWSControlTowerExecution"
-    session_name = "altruist-${var.environment}"
+    session_name = "${var.environment_name}"
   }
 
 }
