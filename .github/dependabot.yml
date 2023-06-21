@@ -17,7 +17,7 @@ updates:
       interval: daily
 
 - package-ecosystem: terraform
-    directory: envs/staging
+    directory: envs/network
     schedule:
       interval: daily
 
