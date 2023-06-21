@@ -13,5 +13,4 @@ jobs:
   terraform:
     uses: ./.github/workflows/terraform.yml
     secrets: 
-      env: |
-        AWS_DEFAULT_REGION: us-east-1
+      env:
