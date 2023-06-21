@@ -1,6 +1,6 @@
 # Common Environement Infrastructure
 
-## Table of content
+# Table of content
 
 - [Common Environement Infrastructure](#common-environement-infrastructure)
   - [Table of content](#table-of-content)
