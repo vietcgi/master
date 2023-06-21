@@ -143,7 +143,7 @@ jobs:
           path: ./
           var_file: envs/${{ env.tf_environment }}/vars.tfvars
           backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
-          backend_config: key=terraform/${{ env.tf_environment }}/terraform.tfstate
+          backend_config: key=${{ env.tf_environment }}/terraform.tfstate
 
       # Run terraform plan on 'pull_request' event.
       - name: Terraform plan
@@ -156,7 +156,7 @@ jobs:
           path: ./
           var_file: envs/${{ env.tf_environment }}/vars.tfvars
           backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
-          backend_config: key=terraform/${{ env.tf_environment }}/terraform.tfstate
+          backend_config: key=${{ env.tf_environment }}/terraform.tfstate
 
       # Run terraform apply on 'push' event or if 'auto_approve' label is present.
       - name: Terraform apply
@@ -169,4 +169,4 @@ jobs:
           path: ./
           var_file: envs/${{ env.tf_environment }}/vars.tfvars
           backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
-          backend_config: key=terraform/${{ env.tf_environment }}/terraform.tfstate
+          backend_config: key=${{ env.tf_environment }}/terraform.tfstate
