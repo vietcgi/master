@@ -115,7 +115,7 @@ jobs:
           role-to-assume: arn:aws:iam::894642160939:role/github
           role-session-name: master
       - run: aws sts get-caller-identity
-      - run: aws s3 ls
+      - run: pwd
       
       # Set environment variables.
       - name: Environment variables
