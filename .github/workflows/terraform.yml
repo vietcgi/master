@@ -139,7 +139,7 @@ jobs:
       # Initialise terraform workspace if one is specified.
       - name: Terraform workspace
         if: env.tf_workspace != 'default'
-        uses: dflook/terraform-new-workspace@v1
+        uses: dflook/terraform-new-workspace@v1.35.0
         with:
           workspace: ${{ env.tf_workspace }}
           path: ./
@@ -152,7 +152,7 @@ jobs:
       # Run terraform plan on 'pull_request' event.
       - name: Terraform plan
         if: github.event_name == 'pull_request'
-        uses: dflook/terraform-plan@v1
+        uses: dflook/terraform-plan@v1.35.0
         with:
           label: ${{ matrix.path[1] }}
           destroy: ${{ contains(matrix.path[0], 'destroy') }}
@@ -168,7 +168,7 @@ jobs:
       # Run terraform apply on 'push' event or if 'auto_approve' label is present.
       - name: Terraform apply
         if: github.event_name == 'push' || contains(matrix.path[0], 'auto_approve')
-        uses: dflook/terraform-apply@v1
+        uses: dflook/terraform-apply@v1.35.0
         with:
           label: ${{ matrix.path[1] }}
           destroy: ${{ contains(matrix.path[0], 'destroy') }}
