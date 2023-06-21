@@ -11,7 +11,6 @@ on:
 
 jobs:
   terraform:
-    # uses: o11y-top/aws-terraform-multiple-environments/.github/workflows/terraform.yml@ref
     uses: ./.github/workflows/terraform.yml
     secrets:
       env: |
