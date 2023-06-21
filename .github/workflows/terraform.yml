@@ -44,7 +44,7 @@ jobs:
         id: changed
         uses: tj-actions/changed-files@v35
         with:
-          dir_names_max_depth: 2
+          dir_names_max_depth: 3
           dir_names: true
           files: envs/**
           json_raw_format: true
