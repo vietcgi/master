@@ -118,6 +118,13 @@ jobs:
           aws-region: us-east-1
           role-to-assume: arn:aws:iam::894642160939:role/github
           role-session-name: master
+      - name: Configure other AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::894642160939:role/AWSControlTowerExecution
+          role-session-name: AWSControlTowerExecution
+          role-chaining: true
       - run: aws sts get-caller-identity
       - run: aws s3 ls
       
