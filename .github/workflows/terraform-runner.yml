@@ -12,6 +12,8 @@ on:
 jobs:
   terraform:
     uses: ./.github/workflows/terraform.yml
+    permissions:
+      pull-requests: write
     secrets:
       env: |
         AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
