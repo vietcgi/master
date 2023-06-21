@@ -12,3 +12,4 @@ on:
 jobs:
   terraform:
     uses: ./.github/workflows/terraform.yml
+    secrets: 
