@@ -135,6 +135,7 @@ jobs:
           fi
           # Add input environment variables to GITHUB_ENV
           for i in '${{ secrets.env }}'; do printf '%s\n' $i >> $GITHUB_ENV; done
+          cat $GITHUB_ENV
 
       # Initialise terraform workspace if one is specified.
       - name: Terraform workspace
