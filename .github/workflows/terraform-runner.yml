@@ -12,5 +12,5 @@ on:
 jobs:
   terraform:
     uses: ./.github/workflows/terraform.yml
-    secrets: 
-      env: 
+    env:
+      TF_VAR_region: us-east-1
