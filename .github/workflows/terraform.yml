@@ -95,6 +95,9 @@ jobs:
     needs: [labels]
     if: toJSON(fromJSON(needs.labels.outputs.matrix)) != '[]'
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
 
     # Run for each label and continue through to release state lock.
     strategy:
@@ -113,8 +116,10 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: us-east-1
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github
+          role-to-assume: arn:aws:iam::894642160939:role/github
+          role-session-name: master
       - run: aws sts get-caller-identity
+      - run: aws s3 ls
       
       # Set environment variables.
       - name: Environment variables
@@ -126,7 +131,7 @@ jobs:
             echo tf_workspace=${string/*--/} >> $GITHUB_ENV
           else
             echo tf_environment=${string} >> $GITHUB_ENV
-            echo tf_workspace='default' >> $GITHUB_ENV
+            #echo tf_workspace='default' >> $GITHUB_ENV
           fi
           # Add input environment variables to GITHUB_ENV
           for i in '${{ secrets.env }}'; do printf '%s\n' $i >> $GITHUB_ENV; done
@@ -134,36 +139,44 @@ jobs:
       # Initialise terraform workspace if one is specified.
       - name: Terraform workspace
         if: env.tf_workspace != 'default'
-        uses: dflook/terraform-new-workspace@v1
+        uses: dflook/terraform-new-workspace@v1.35.0
         with:
           workspace: ${{ env.tf_workspace }}
           path: ./
-          var_file: envs/us-east-1/${{ env.tf_environment }}/vars.tfvars
-          backend_config_file: envs/us-east-1/${{ env.tf_environment }}/backend.tfvars
-          backend_config: key=terraform/${{ env.tf_environment }}/terraform.tfstate
+          backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
+          backend_config: |
+            key=${{ env.tf_environment }}/terraform.tfstate
+            region=us-east-1
+            bucket=terraform-state-emodo
 
       # Run terraform plan on 'pull_request' event.
       - name: Terraform plan
         if: github.event_name == 'pull_request'
-        uses: dflook/terraform-plan@v1
+        uses: dflook/terraform-plan@v1.35.0
         with:
           label: ${{ matrix.path[1] }}
           destroy: ${{ contains(matrix.path[0], 'destroy') }}
           workspace: ${{ env.tf_workspace }}
           path: ./
-          var_file: envs/us-east-1/${{ env.tf_environment }}/vars.tfvars
-          backend_config_file: envs/us-east-1/${{ env.tf_environment }}/backend.tfvars
-          backend_config: key=terraform/${{ env.tf_environment }}/terraform.tfstate
+          var_file: envs/${{ env.tf_environment }}/vars.tfvars
+          backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
+          backend_config: |
+            key=${{ env.tf_environment }}/terraform.tfstate
+            region=us-east-1
+            bucket=terraform-state-emodo
 
       # Run terraform apply on 'push' event or if 'auto_approve' label is present.
       - name: Terraform apply
         if: github.event_name == 'push' || contains(matrix.path[0], 'auto_approve')
-        uses: dflook/terraform-apply@v1
+        uses: dflook/terraform-apply@v1.35.0
         with:
           label: ${{ matrix.path[1] }}
           destroy: ${{ contains(matrix.path[0], 'destroy') }}
           workspace: ${{ env.tf_workspace }}
           path: ./
-          var_file: envs/us-east-1/${{ env.tf_environment }}/vars.tfvars
-          backend_config_file: envs/us-east-1/${{ env.tf_environment }}/backend.tfvars
-          backend_config: key=terraform/${{ env.tf_environment }}/terraform.tfstate
+          var_file: envs/${{ env.tf_environment }}/vars.tfvars
+          backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
+          backend_config: |
+            key=${{ env.tf_environment }}/terraform.tfstate
+            region=us-east-1
+            bucket=terraform-state-emodo

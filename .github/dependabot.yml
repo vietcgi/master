@@ -12,16 +12,16 @@ updates:
       interval: daily
 
 - package-ecosystem: terraform
-    directory: envs/us-east-1/production
+    directory: envs/production
     schedule:
       interval: daily
 
 - package-ecosystem: terraform
-    directory: envs/us-east-1/staging
+    directory: envs/network
     schedule:
       interval: daily
 
 - package-ecosystem: terraform
-    directory: envs/us-east-1/master
+    directory: envs/master
     schedule:
       interval: daily
