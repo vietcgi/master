@@ -44,7 +44,7 @@ jobs:
         id: changed
         uses: tj-actions/changed-files@v35
         with:
-          dir_names_max_depth: 3
+          dir_names_max_depth: 2
           dir_names: true
           files: envs/**
           json_raw_format: true
@@ -137,7 +137,7 @@ jobs:
           for i in '${{ secrets.env }}'; do printf '%s\n' $i >> $GITHUB_ENV; done
           cat $GITHUB_ENV
 
-      # Initialise terraform workspace if one is specified.
+      # Initialize terraform workspace if one is specified.
       - name: Terraform workspace
         if: env.tf_workspace != 'default'
         uses: dflook/terraform-new-workspace@v1.35.0
