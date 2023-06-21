@@ -113,7 +113,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: us-east-1
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github
+          role-to-assume: arn:aws:iam::894642160939:role/github
       - run: aws sts get-caller-identity
       
       # Set environment variables.
