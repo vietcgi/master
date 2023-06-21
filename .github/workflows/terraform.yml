@@ -129,7 +129,7 @@ jobs:
             echo tf_workspace=${string/*--/} >> $GITHUB_ENV
           else
             echo tf_environment=${string} >> $GITHUB_ENV
-            echo tf_workspace='default' >> $GITHUB_ENV
+            #echo tf_workspace='default' >> $GITHUB_ENV
           fi
           # Add input environment variables to GITHUB_ENV
           for i in '${{ secrets.env }}'; do printf '%s\n' $i >> $GITHUB_ENV; done
