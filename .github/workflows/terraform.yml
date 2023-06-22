@@ -36,13 +36,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3.53
+        uses: actions/checkout@v3
 
       # List changed environment directories when PR is opened or updated by bots.
       - name: Get changed environments once
         if: contains(github.event.action, 'opened') || contains(github.actor, '[bot]')
         id: changed
-        uses: tj-actions/changed-files@v36.4.1
+        uses: tj-actions/changed-files@v3
         with:
           dir_names_max_depth: 2
           dir_names: true
@@ -53,7 +53,7 @@ jobs:
       # Add 'tf' prefixed labels for changed environments when PR is opened or updated by bots.
       - name: Add changed environment labels once
         if: steps.changed.outcome == 'success' && toJSON(fromJSON(steps.changed.outputs.all_modified_files)) != '[]'
-        uses: actions/github-script@v6.41
+        uses: actions/github-script@v6
         env:
           changed: ${{ steps.changed.outputs.all_modified_files }}
         with:
@@ -72,7 +72,7 @@ jobs:
 
       # Output a list of 'tf' prefixed labels.
       - name: Get labels
-        uses: actions/github-script@v6.41
+        uses: actions/github-script@v6
         id: labels
         with:
           script: |
@@ -110,7 +110,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3.53
+        uses: actions/checkout@v3
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
