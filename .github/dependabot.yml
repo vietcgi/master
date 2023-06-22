@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: daily
 
-  # https://github.com/dependabot/dependabot-core/issues/2178
+  #https://github.com/dependabot/dependabot-core/issues/2178
   - package-ecosystem: terraform
     directory: envs/*
     schedule:
