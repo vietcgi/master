@@ -1,6 +1,6 @@
 provider "aws" {
   region  = local.region
-  profile = "${var.environment_name}"
+  #profile = "${var.environment_name}"
   assume_role {
     role_arn     = "arn:aws:iam::${var.account_id}:role/AWSControlTowerExecution"
     session_name = "${var.environment_name}"
