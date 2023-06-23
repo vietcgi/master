@@ -97,6 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+      pull-requests: write
       contents: read
 
     # Run for each label and continue through to release state lock.
@@ -111,7 +112,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -127,7 +128,7 @@ jobs:
       #     role-chaining: true
       # - run: aws sts get-caller-identity
       # - run: aws s3 ls
-      
+
       # Set environment variables.
       - name: Environment variables
         run: |
