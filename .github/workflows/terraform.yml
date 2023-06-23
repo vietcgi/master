@@ -42,7 +42,7 @@ jobs:
       - name: Get changed environments once
         if: contains(github.event.action, 'opened') || contains(github.actor, '[bot]')
         id: changed
-        uses: tj-actions/changed-files@v36.4.1
+        uses: tj-actions/changed-files@v3
         with:
           dir_names_max_depth: 2
           dir_names: true
@@ -97,6 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+      pull-requests: write
       contents: read
 
     # Run for each label and continue through to release state lock.
@@ -111,7 +112,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -125,9 +126,9 @@ jobs:
       #     role-to-assume: arn:aws:iam::894642160939:role/AWSControlTowerExecution
       #     role-session-name: AWSControlTowerExecution
       #     role-chaining: true
-      - run: aws sts get-caller-identity
-      - run: aws s3 ls
-      
+      # - run: aws sts get-caller-identity
+      # - run: aws s3 ls
+
       # Set environment variables.
       - name: Environment variables
         run: |
