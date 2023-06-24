@@ -184,6 +184,12 @@ jobs:
         with:
           path: ./
           workspace: production
+          var_file: envs/production/vars.tfvars
+          backend_config_file: envs/production/backend.tfvars
+          backend_config: |
+            key=production/terraform.tfstate
+            region=us-east-1
+            bucket=terraform-state-emodo
 
       - name: Retry failed destroy
         uses: dflook/terraform-destroy@v1.33.0
@@ -191,3 +197,9 @@ jobs:
         with:
           path: ./
           workspace: production
+          var_file: envs/production/vars.tfvars
+          backend_config_file: envs/production/backend.tfvars
+          backend_config: |
+            key=production/terraform.tfstate
+            region=us-east-1
+            bucket=terraform-state-emodo
