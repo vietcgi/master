@@ -184,11 +184,12 @@ jobs:
         continue-on-error: true
         with:
           path: ./
-          workspace: default
-          var_file: envs/production/vars.tfvars
-          backend_config_file: envs/production/backend.tfvars
+          workspace: ${{ env.tf_workspace }}
+          path: ./
+          var_file: envs/${{ env.tf_environment }}/vars.tfvars
+          backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
           backend_config: |
-            key=production/terraform.tfstate
+            key=${{ env.tf_environment }}/terraform.tfstate
             region=us-east-1
             bucket=terraform-state-emodo
 
@@ -197,10 +198,11 @@ jobs:
         if: ${{ steps.first_try.outputs.failure-reason == 'destroy-failed' }}
         with:
           path: ./
-          workspace: default
-          var_file: envs/production/vars.tfvars
-          backend_config_file: envs/production/backend.tfvars
+          workspace: ${{ env.tf_workspace }}
+          path: ./
+          var_file: envs/${{ env.tf_environment }}/vars.tfvars
+          backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
           backend_config: |
-            key=production/terraform.tfstate
+            key=${{ env.tf_environment }}/terraform.tfstate
             region=us-east-1
             bucket=terraform-state-emodo
