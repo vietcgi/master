@@ -121,6 +121,7 @@ jobs:
         run: |
           # Add terraform environment and workspace variables to GITHUB_ENV
           string='${{ matrix.path[1] }}'
+          echo $string
           if [[ $string == *'--'* ]]; then
             echo tf_environment=${string/--*/} >> $GITHUB_ENV
             echo tf_workspace=${string/*--/} >> $GITHUB_ENV
