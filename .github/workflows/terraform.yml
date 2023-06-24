@@ -183,12 +183,12 @@ jobs:
         id: first_try
         continue-on-error: true
         with:
+          workspace: ${{ env.tf_workspace }}
           path: ./
-          workspace: default
-          var_file: envs/production/vars.tfvars
-          backend_config_file: envs/production/backend.tfvars
+          var_file: envs/${{ env.tf_environment }}/vars.tfvars
+          backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
           backend_config: |
-            key=production/terraform.tfstate
+            key=${{ env.tf_environment }}/terraform.tfstate
             region=us-east-1
             bucket=terraform-state-emodo
 
@@ -196,11 +196,11 @@ jobs:
         uses: dflook/terraform-destroy@v1.33.0
         if: ${{ steps.first_try.outputs.failure-reason == 'destroy-failed' }}
         with:
+          workspace: ${{ env.tf_workspace }}
           path: ./
-          workspace: default
-          var_file: envs/production/vars.tfvars
-          backend_config_file: envs/production/backend.tfvars
+          var_file: envs/${{ env.tf_environment }}/vars.tfvars
+          backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
           backend_config: |
-            key=production/terraform.tfstate
+            key=${{ env.tf_environment }}/terraform.tfstate
             region=us-east-1
             bucket=terraform-state-emodo
