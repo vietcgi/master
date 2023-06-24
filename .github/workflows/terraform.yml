@@ -183,7 +183,7 @@ jobs:
         continue-on-error: true
         with:
           path: ./
-          workspace: production
+          workspace: default
           var_file: envs/production/vars.tfvars
           backend_config_file: envs/production/backend.tfvars
           backend_config: |
@@ -196,7 +196,7 @@ jobs:
         if: ${{ steps.first_try.outputs.failure-reason == 'destroy-failed' }}
         with:
           path: ./
-          workspace: production
+          workspace: default
           var_file: envs/production/vars.tfvars
           backend_config_file: envs/production/backend.tfvars
           backend_config: |
