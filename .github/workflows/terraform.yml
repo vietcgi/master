@@ -194,7 +194,6 @@ jobs:
             bucket=terraform-state-emodo
 
       - name: Retry failed destroy
-        if: github.event_name == 'push' || contains(matrix.path[0], 'auto_approve')
         uses: dflook/terraform-destroy@v1.33.0
         if: ${{ steps.first_try.outputs.failure-reason == 'destroy-failed' }}
         with:
