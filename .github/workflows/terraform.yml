@@ -109,6 +109,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Terraform fmt
+        uses: dflook/terraform-fmt@v1
+        with:
+          path: ./
+
+      - name: Terraform fmt check
+        uses: dflook/terraform-fmt-check@v1
+        with:
+          path: ./
+      
+      - name: Terraform validate
+        uses: dflook/terraform-validate@v1
+        with:
+          path: ./
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -178,30 +193,30 @@ jobs:
             region=us-east-1
             bucket=terraform-state-emodo
 
-      - name: terraform destroy
-        if: github.event_name == 'push' || contains(matrix.path[0], 'auto_approve')
-        uses: dflook/terraform-destroy@v1.33.0
-        id: first_try
-        continue-on-error: true
-        with:
-          workspace: ${{ env.tf_workspace }}
-          path: ./
-          var_file: envs/${{ env.tf_environment }}/vars.tfvars
-          backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
-          backend_config: |
-            key=${{ env.tf_environment }}/terraform.tfstate
-            region=us-east-1
-            bucket=terraform-state-emodo
+      # - name: Terraform destroy
+      #   if: github.event_name == 'push' || contains(matrix.path[0], 'auto_approve')
+      #   uses: dflook/terraform-destroy@v1.33.0
+      #   id: first_try
+      #   continue-on-error: true
+      #   with:
+      #     workspace: ${{ env.tf_workspace }}
+      #     path: ./
+      #     var_file: envs/${{ env.tf_environment }}/vars.tfvars
+      #     backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
+      #     backend_config: |
+      #       key=${{ env.tf_environment }}/terraform.tfstate
+      #       region=us-east-1
+      #       bucket=terraform-state-emodo
 
-      - name: Retry failed destroy
-        uses: dflook/terraform-destroy@v1.33.0
-        if: ${{ steps.first_try.outputs.failure-reason == 'destroy-failed' }}
-        with:
-          workspace: ${{ env.tf_workspace }}
-          path: ./
-          var_file: envs/${{ env.tf_environment }}/vars.tfvars
-          backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
-          backend_config: |
-            key=${{ env.tf_environment }}/terraform.tfstate
-            region=us-east-1
-            bucket=terraform-state-emodo
+      # - name: Retry failed destroy
+      #   uses: dflook/terraform-destroy@v1.33.0
+      #   if: ${{ steps.first_try.outputs.failure-reason == 'destroy-failed' }}
+      #   with:
+      #     workspace: ${{ env.tf_workspace }}
+      #     path: ./
+      #     var_file: envs/${{ env.tf_environment }}/vars.tfvars
+      #     backend_config_file: envs/${{ env.tf_environment }}/backend.tfvars
+      #     backend_config: |
+      #       key=${{ env.tf_environment }}/terraform.tfstate
+      #       region=us-east-1
+      #       bucket=terraform-state-emodo
