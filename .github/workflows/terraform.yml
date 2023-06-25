@@ -109,6 +109,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: terraform fmt
+        uses: dflook/terraform-fmt@v1
+        with:
+          path: ./
+
+      - name: terraform fmt check
+        uses: dflook/terraform-fmt-check@v1
+        with:
+          path: ./
+      
+      - name: terraform validate
+        uses: dflook/terraform-validate@v1
+        with:
+          path: ./
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
