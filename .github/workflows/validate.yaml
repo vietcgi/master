@@ -13,12 +13,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       
-        - name: terraform fmt
+      - name: Terraform fmt
         uses: dflook/terraform-fmt@v1
         with:
           path: ./
 
-      - name: terraform fmt
+      - name: Terraform fmt check
         uses: dflook/terraform-fmt-check@v1
         with:
           path: ./
@@ -30,7 +30,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: terraform validate
+      - name: Terraform validate
         uses: dflook/terraform-validate@v1
         with:
           path: ./
