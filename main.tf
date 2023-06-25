@@ -56,18 +56,22 @@ module "vpc" {
   tags = local.tags
 }
 
+
 # Retrieve existing root hosted zone
 data "aws_route53_zone" "root" {
+  count = var.argocd ? 1 : 0
   name = var.hosted_zone_name
 }
 
 # Create Sub HostedZone four our deployment
 resource "aws_route53_zone" "sub" {
+  count = var.argocd ? 1 : 0
   name = "${local.name}.${var.hosted_zone_name}"
 }
 
 # Validate records for the new HostedZone
 resource "aws_route53_record" "ns" {
+  count = var.argocd ? 1 : 0
   zone_id = data.aws_route53_zone.root.zone_id
   name    = "${local.name}.${var.hosted_zone_name}"
   type    = "NS"
@@ -76,6 +80,7 @@ resource "aws_route53_record" "ns" {
 }
 
 module "acm" {
+  count = var.argocd ? 1 : 0
   source  = "terraform-aws-modules/acm/aws"
   version = "~> 4.0"
 
@@ -98,6 +103,7 @@ module "acm" {
 # Login to AWS Secrets manager with the same role as Terraform to extract the ArgoCD admin password with the secret name as "argocd"
 #---------------------------------------------------------------
 resource "random_password" "argocd" {
+  count = var.argocd ? 1 : 0
   length           = 16
   special          = true
   override_special = "!#$%&*()-_=+[]{}<>:?"
@@ -105,11 +111,13 @@ resource "random_password" "argocd" {
 
 #tfsec:ignore:aws-ssm-secret-use-customer-key
 resource "aws_secretsmanager_secret" "argocd" {
+  count = var.argocd ? 1 : 0
   name                    = "${local.argocd_secret_manager_name}.${local.name}"
   recovery_window_in_days = 0 # Set to zero for this example to force delete during Terraform destroy
 }
 
 resource "aws_secretsmanager_secret_version" "argocd" {
+  count = var.argocd ? 1 : 0
   secret_id     = aws_secretsmanager_secret.argocd.id
   secret_string = random_password.argocd.result
 }

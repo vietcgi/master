@@ -29,3 +29,9 @@ variable "hosted_zone_name" {
   description = "Route53 domain for the cluster."
   default     = "example.com"
 }
+
+variable "argocd" {
+  type        = bool
+  description = "Deploy ArgoCD"
+  default     = true
+}
