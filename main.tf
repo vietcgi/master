@@ -7,9 +7,40 @@ provider "aws" {
 
 }
 
-terraform {
-  backend "s3" {
-    encrypt = true
+provider "kubernetes" {
+  host                   = module.eks_cluster.eks_cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks_cluster.cluster_certificate_authority_data)
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", module.eks_cluster.eks_cluster_id]
+  }
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = module.eks_cluster.eks_cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks_cluster.cluster_certificate_authority_data)
+
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "aws"
+      args        = ["eks", "get-token", "--cluster-name", module.eks_cluster.eks_cluster_id]
+    }
+  }
+}
+
+provider "kubectl" {
+  apply_retry_count      = 10
+  host                   = module.eks_cluster.eks_cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks_cluster.cluster_certificate_authority_data)
+  load_config_file       = false
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", module.eks_cluster.eks_cluster_id]
   }
 }
 
@@ -56,68 +87,27 @@ module "vpc" {
   tags = local.tags
 }
 
+module "eks_cluster" {
+  source = "./modules/eks_cluster"
 
-# Retrieve existing root hosted zone
-data "aws_route53_zone" "root" {
-  count = var.argocd ? 1 : 0
-  name = var.hosted_zone_name
-}
+  aws_region      = var.aws_region
+  service_name    = "green"
+  cluster_version = "1.27" # Here, we deploy the cluster with the N+1 Kubernetes Version
 
-# Create Sub HostedZone four our deployment
-resource "aws_route53_zone" "sub" {
-  count = var.argocd ? 1 : 0
-  name = "${local.name}.${var.hosted_zone_name}"
-}
+  argocd_route53_weight      = "100" # We control with theses parameters how we send traffic to the workloads in the new cluster
+  route53_weight             = "100"
+  ecsfrontend_route53_weight = "100"
 
-# Validate records for the new HostedZone
-resource "aws_route53_record" "ns" {
-  count = var.argocd ? 1 : 0
-  zone_id = data.aws_route53_zone.root.zone_id
-  name    = "${local.name}.${var.hosted_zone_name}"
-  type    = "NS"
-  ttl     = "30"
-  records = aws_route53_zone.sub.name_servers
-}
+  environment_name       = var.environment_name
+  hosted_zone_name       = var.hosted_zone_name
+  eks_admin_role_name    = var.eks_admin_role_name
+  workload_repo_url      = var.workload_repo_url
+  workload_repo_secret   = var.workload_repo_secret
+  workload_repo_revision = var.workload_repo_revision
+  workload_repo_path     = var.workload_repo_path
 
-module "acm" {
-  count = var.argocd ? 1 : 0
-  source  = "terraform-aws-modules/acm/aws"
-  version = "~> 4.0"
+  addons_repo_url = var.addons_repo_url
 
-  domain_name = "${local.name}.${var.hosted_zone_name}"
-  zone_id     = aws_route53_zone.sub.zone_id
-
-  subject_alternative_names = [
-    "*.${local.name}.${var.hosted_zone_name}"
-  ]
-
-  wait_for_validation = true
-
-  tags = {
-    Name = "${local.name}.${var.hosted_zone_name}"
-  }
-}
-
-#---------------------------------------------------------------
-# ArgoCD Admin Password credentials with Secrets Manager
-# Login to AWS Secrets manager with the same role as Terraform to extract the ArgoCD admin password with the secret name as "argocd"
-#---------------------------------------------------------------
-resource "random_password" "argocd" {
-  count = var.argocd ? 1 : 0
-  length           = 16
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
-}
-
-#tfsec:ignore:aws-ssm-secret-use-customer-key
-resource "aws_secretsmanager_secret" "argocd" {
-  count = var.argocd ? 1 : 0
-  name                    = "${local.argocd_secret_manager_name}.${local.name}"
-  recovery_window_in_days = 0 # Set to zero for this example to force delete during Terraform destroy
-}
-
-resource "aws_secretsmanager_secret_version" "argocd" {
-  count = var.argocd ? 1 : 0
-  secret_id     = aws_secretsmanager_secret.argocd.id
-  secret_string = random_password.argocd.result
+  iam_platform_user                 = var.iam_platform_user
+  argocd_secret_manager_name_suffix = var.argocd_secret_manager_name_suffix
 }
