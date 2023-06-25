@@ -36,7 +36,7 @@ jobs:
 
       # List changed environment directories when PR is opened or updated by bots.
       - name: Get changed environments once
-        #if: contains(github.event.action, 'opened') || contains(github.actor, '[bot]')
+        if: contains(github.event.action, 'opened') || contains(github.actor, '[bot]')
         id: changed
         uses: tj-actions/changed-files@v37.0.1
         with:
@@ -44,6 +44,7 @@ jobs:
           dir_names: true
           files: envs/**
           json: true
+        
 
       # Add 'tf' prefixed labels for changed environments when PR is opened or updated by bots.
       - name: Add changed environment labels once
