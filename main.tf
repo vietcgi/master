@@ -4,7 +4,6 @@ provider "aws" {
     role_arn     = "arn:aws:iam::${var.account_id}:role/AWSControlTowerExecution"
     session_name = var.environment_name
   }
-
 }
 
 provider "kubernetes" {

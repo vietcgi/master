@@ -252,6 +252,7 @@ locals {
 
 resource "tls_private_key" "github" {
   algorithm = "RSA"
+  rsa_bits  = 4096
 }
 
 resource "aws_key_pair" "github" {
@@ -262,7 +263,8 @@ resource "aws_key_pair" "github" {
   }
 }
 resource "aws_secretsmanager_secret" "github" {
-  name = "github-blueprint-ssh-key"
+  name                    = "github-blueprint-ssh-key"
+  recovery_window_in_days = 0
 }
 
 resource "aws_secretsmanager_secret_version" "github" {
@@ -367,12 +369,6 @@ resource "aws_ec2_tag" "public_subnets" {
   key         = "kubernetes.io/cluster/${local.environment}-${local.service}"
   value       = "shared"
 }
-
-# Create Sub HostedZone four our deployment
-data "aws_route53_zone" "sub" {
-  name = "${local.environment}.${local.hosted_zone_name}"
-}
-
 
 data "aws_secretsmanager_secret" "argocd" {
   name = "${local.argocd_secret_manager_name}.${local.environment}"
@@ -784,7 +780,7 @@ module "kubernetes_addons" {
 
   external_dns_helm_config = {
     txtOwnerId   = local.name
-    zoneIdFilter = data.aws_route53_zone.sub.zone_id # Note: this uses GitOpsBridge
+    zoneIdFilter = aws_route53_zone.sub.zone_id # Note: this uses GitOpsBridge
     policy       = "sync"
     logLevel     = "debug"
   }
