@@ -49,6 +49,7 @@ locals {
   node_group_name = "managed-ondemand"
 
 
+
   #---------------------------------------------------------------
   # ARGOCD ADD-ON APPLICATION
   #---------------------------------------------------------------
@@ -247,6 +248,88 @@ locals {
   }
 }
 
+#create keygithub-blueprint-ssh-key and store it Secret mamager
+
+resource "tls_private_key" "github" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "github" {
+  key_name   = "github-blueprint-ssh-key"
+  public_key = tls_private_key.github.public_key_openssh
+  tags = {
+    Name = "github-blueprint-ssh-key"
+  }
+}
+resource "aws_secretsmanager_secret" "github" {
+  name                    = "github-blueprint-ssh-key"
+  recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "github" {
+  secret_id     = aws_secretsmanager_secret.github.id
+  secret_string = tls_private_key.github.private_key_pem
+}
+
+# Retrieve existing root hosted zone
+data "aws_route53_zone" "root" {
+  name = var.hosted_zone_name
+}
+
+# Create Sub HostedZone four our deployment
+resource "aws_route53_zone" "sub" {
+  name = "${var.environment_name}.${var.hosted_zone_name}"
+}
+
+# Validate records for the new HostedZone
+resource "aws_route53_record" "ns" {
+  zone_id = data.aws_route53_zone.root.zone_id
+  name    = "${var.environment_name}.${var.hosted_zone_name}"
+  type    = "NS"
+  ttl     = "30"
+  records = aws_route53_zone.sub.name_servers
+}
+
+module "acm" {
+  source  = "terraform-aws-modules/acm/aws"
+  version = "~> 4.0"
+
+  domain_name = "${var.environment_name}.${var.hosted_zone_name}"
+  zone_id     = aws_route53_zone.sub.zone_id
+
+  subject_alternative_names = [
+    "*.${var.environment_name}.${var.hosted_zone_name}"
+  ]
+
+  wait_for_validation = true
+
+  tags = {
+    Name = "${var.environment_name}.${var.hosted_zone_name}"
+  }
+}
+
+#---------------------------------------------------------------
+# ArgoCD Admin Password credentials with Secrets Manager
+# Login to AWS Secrets manager with the same role as Terraform to extract the ArgoCD admin password with the secret name as "argocd"
+#---------------------------------------------------------------
+resource "random_password" "argocd" {
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+#tfsec:ignore:aws-ssm-secret-use-customer-key
+resource "aws_secretsmanager_secret" "argocd" {
+  name                    = "${local.argocd_secret_manager_name}.${var.environment_name}"
+  recovery_window_in_days = 0 # Set to zero for this example to force delete during Terraform destroy
+}
+
+resource "aws_secretsmanager_secret_version" "argocd" {
+  secret_id     = aws_secretsmanager_secret.argocd.id
+  secret_string = random_password.argocd.result
+}
+
 # Find the user currently in use by AWS
 data "aws_caller_identity" "current" {}
 
@@ -286,12 +369,6 @@ resource "aws_ec2_tag" "public_subnets" {
   key         = "kubernetes.io/cluster/${local.environment}-${local.service}"
   value       = "shared"
 }
-
-# Create Sub HostedZone four our deployment
-data "aws_route53_zone" "sub" {
-  name = "${local.environment}.${local.hosted_zone_name}"
-}
-
 
 data "aws_secretsmanager_secret" "argocd" {
   name = "${local.argocd_secret_manager_name}.${local.environment}"
@@ -633,7 +710,7 @@ module "kubernetes_addons" {
     workloads = local.workload_application
     ecsdemo   = local.ecsdemo_application
   }
-
+  depends_on = [aws_secretsmanager_secret.github]
   # This example shows how to set default ArgoCD Admin Password using SecretsManager with Helm Chart set_sensitive values.
   argocd_helm_config = {
     set_sensitive = [
@@ -703,7 +780,7 @@ module "kubernetes_addons" {
 
   external_dns_helm_config = {
     txtOwnerId   = local.name
-    zoneIdFilter = data.aws_route53_zone.sub.zone_id # Note: this uses GitOpsBridge
+    zoneIdFilter = aws_route53_zone.sub.zone_id # Note: this uses GitOpsBridge
     policy       = "sync"
     logLevel     = "debug"
   }
