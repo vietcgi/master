@@ -38,7 +38,7 @@ jobs:
       - name: Get changed environments once
         if: contains(github.event.action, 'opened') || contains(github.actor, '[bot]')
         id: changed
-        uses: tj-actions/changed-files@v37.0.1
+        uses: tj-actions/changed-files@v41.0.0
         with:
           dir_names_max_depth: 2
           dir_names: true
